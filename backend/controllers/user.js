@@ -2,7 +2,7 @@
 
 
 
-//acciones
+//Metodos
 
 const register = (req, res) => {
 

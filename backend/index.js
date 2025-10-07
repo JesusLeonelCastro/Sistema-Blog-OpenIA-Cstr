@@ -22,6 +22,8 @@ app.use(express.urlencoded({extended:true}));
 const userRoutes = require('./routes/user');
 app.use('/api/user', userRoutes);
 
+const articleRoutes = require('./routes/article');
+app.use('/api/article', articleRoutes);
 
 //Poner el servidor a escuchar peticiones
 app.listen(port, ()=>{
