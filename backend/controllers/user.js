@@ -164,6 +164,14 @@ const avatar = (req, res) => {
   });
 }
 
+const soloparaUsuariosIdentificados = (req, res) => {
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'Tienes acceso a esta seccion por q estas identificado',
+    datosDelUsuario: req.user
+  });
+}
 
 //exportaciones
 module.exports = {
@@ -172,5 +180,6 @@ module.exports = {
   profile,
   update,
   upload,
+  soloparaUsuariosIdentificados,
   avatar
 };
