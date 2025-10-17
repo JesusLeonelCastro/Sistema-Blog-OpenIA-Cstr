@@ -131,21 +131,89 @@ const login = async (req, res) => {
   }
 };
 
+//Metodo ver perfil de usuario
+const profile = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const myUser = await User.findById(id)
+    
+    .select({ 
+      password: 0, 
+      created_At: 0,
+      email: 0
+    });
 
-const profile = (req, res) => {
+    if (!myUser) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Usuario no existe'
+      });
+    }
 
-  return res.status(200).json({
-    status: 'success',
-    message: 'Metodo de obtener perfil de usuario'
-  });
-}
+    return res.status(200).json({
+      status: 'success',
+      message: 'Perfil de usuario encontrado',
+      user: myUser
+    });
+  } catch (err) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'Error al buscar el usuario'
+      
+    });
+  }
+};
 
-const update = (req, res) => {
+const update = async(req, res) => {
 
-  return res.status(200).json({
-    status: 'success',
-    message: 'Metodo de actualizar perfil de usuario'
-  });
+  try {
+    // id del usuario identificado en el token (sub, _id o id según tu payload)
+    const userIdentity = req.user || {};
+    const userId = userIdentity.sub || userIdentity._id || userIdentity.id;
+    if (!userId) {
+      return res.status(401).json({ status: 'error', message: 'No autorizado' });
+    }
+
+    // construir objeto con los campos a actualizar (usar req, no request)
+    const userToUpdate = {
+      name: req.body.name ?? userIdentity.name,
+      surname: req.body.surname ?? userIdentity.surname,
+      nick: req.body.nick ?? userIdentity.nick,
+      email: req.body.email ?? userIdentity.email,
+      bio: req.body.bio ?? userIdentity.bio
+    };
+
+    // validar datos (si tu validate admite segundo parámetro para update)
+    validate(userToUpdate, false);
+
+    // comprobar duplicados (email o nick) excluyendo al propio usuario
+    const duplicate = await User.findOne({
+      $or: [{ email: userToUpdate.email }, { nick: userToUpdate.nick }]
+    }).exec();
+
+    if (duplicate && duplicate._id.toString() !== userId.toString()) {
+      return res.status(400).json({ status: 'error', message: 'El email o nick ya está en uso' });
+    }
+
+    // actualizar en la BD y devolver el nuevo documento (sin password)
+    const updatedUser = await User.findByIdAndUpdate(userId, userToUpdate, { new: true }).select('-password');
+    if (!updatedUser) {
+      return res.status(404).json({ status: 'error', message: 'Usuario no encontrado' });
+    }
+
+    return res.status(200).json({
+      status: 'success',
+      message: 'Usuario actualizado correctamente',
+      user: updatedUser
+    });
+  } catch (err) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'Error al actualizar el usuario',
+      details: err?.message || String(err)
+    });
+  }
+  
 }
 
 const upload = (req, res) => {

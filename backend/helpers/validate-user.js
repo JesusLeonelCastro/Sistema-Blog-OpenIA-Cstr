@@ -1,18 +1,18 @@
 const validator = require("validator");
 
-const validate = (params) => {
+const validate = (params, withPassword = true) => {
          
 let validation = false;
 
 // Validate nombre 
 let name = !validator.isEmpty(params.name) 
             && validator.isLength(params.name, { min: 3, max: 30 }) 
-            && validator.isAlpha(params.name, 'es-ES');
+            && validator.isAlpha(params.name.replace(/\s/g, ''), 'es-ES');
 
 //validar apellido
 let surname = !validator.isEmpty(params.surname) 
             && validator.isLength(params.surname, { min: 3, max: 50 }) 
-            && validator.isAlpha(params.surname, 'es-ES');
+            && validator.isAlpha(params.surname.replace(/\s/g, ''), 'es-ES');
 
 //validar nick
 let nick = !validator.isEmpty(params.nick) 
@@ -23,8 +23,12 @@ let email = !validator.isEmpty(params.email)
             && validator.isEmail(params.email);
 
 //validar password/
-let password = !validator.isEmpty(params.password) 
-            && validator.isLength(params.password, { min: 6, max: 100 });
+let password = true;
+if(withPassword){
+    let password = !validator.isEmpty(params.password) 
+    && validator.isLength(params.password, { min: 6, max: 100 });
+}
+
 
 //comprobar que todo se cumple
     if(!name || !surname || !nick || !email || !password){

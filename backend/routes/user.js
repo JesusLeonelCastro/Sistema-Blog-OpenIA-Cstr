@@ -11,7 +11,7 @@ const { auth } = require('../middlewares/auth');
 routes.post('/register', userController.register);
 routes.post('/login', userController.login);
 routes.get('/profile/:id', userController.profile);
-routes.put('/update', userController.update);
+routes.put('/update', auth, userController.update);
 routes.post('/upload/:id', userController.upload);
 routes.get('/avatar/:id', userController.avatar);
 routes.get('/soloparaidentificados', auth, userController.soloparaUsuariosIdentificados);
