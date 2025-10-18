@@ -1,4 +1,7 @@
 //importaciones 
+const path = require('path');
+const fs = require('fs');
+
 const validate = require('../helpers/validate-user');
 const user = require('../models/user');
 const User = require('../models/user');
@@ -109,10 +112,10 @@ const login = async (req, res) => {
       name: user.name,
       nick: user.nick,
       email: user.email,
-      
+
     };
 
-    
+
     // Si usas JWT, genera token aquí y añádelo a la respuesta:
     const token = jwt.createToken(user);
 
@@ -136,12 +139,12 @@ const profile = async (req, res) => {
   try {
     const id = req.params.id;
     const myUser = await User.findById(id)
-    
-    .select({ 
-      password: 0, 
-      created_At: 0,
-      email: 0
-    });
+
+      .select({
+        password: 0,
+        created_At: 0,
+        email: 0
+      });
 
     if (!myUser) {
       return res.status(404).json({
@@ -159,12 +162,13 @@ const profile = async (req, res) => {
     return res.status(500).json({
       status: 'error',
       message: 'Error al buscar el usuario'
-      
+
     });
   }
 };
 
-const update = async(req, res) => {
+//Metodo actualizar usuario
+const update = async (req, res) => {
 
   try {
     // id del usuario identificado en el token (sub, _id o id según tu payload)
@@ -213,22 +217,79 @@ const update = async(req, res) => {
       details: err?.message || String(err)
     });
   }
-  
+
 }
 
-const upload = (req, res) => {
+//Metodo subir avatar de usuario /// falta arregla algo
+const upload = async (req, res) => {
 
-  return res.status(200).json({
-    status: 'success',
-    message: 'Metodo de subir imagen de perfil de usuario'
-  });
+  //recoger el id de l usuario identificado
+  const id = req.params.id;
+  //recoger el ficher y comoprobar si existe
+  if (!req.file) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'La peticion no incluye la imagen de avatar'
+    });
+  }
+
+  try {
+
+    //nombre del archivo
+    const { originalname, filename, path: filePath } = req.file;
+    //sacar la extenciojn dekl archivo
+    const ext = path.extname(originalname).toLowerCase();
+    const validExtensions = ['.png', '.jpg', '.jpeg', '.gif'];
+    //sino es imagen no es valida borrar fichero y devolver error
+    if (!validExtensions.includes(ext)) {
+      fs.unlinkSync(filePath);
+      return res.status(400).json({
+        status: 'error',
+        message: 'La imagen no tiene una extension valida'
+      });
+    }
+
+    //buscar el usuario identificado en la bd
+    const userToUpdate = await User.findByIdAndUpdate(
+      id,
+      { avatar: filename },
+      { new: true }
+    );
+
+    if (!userToUpdate) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Usuario no encontrado'
+      });
+    }
+
+    return res.status(200).json({
+
+      status: 'success',
+      message: 'Metodo de subir imagen de perfil de usuario',
+      user: userToUpdate
+    });
+
+  } catch (err) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'Error al subir el avatar',
+    });
+  }
 }
 
 const avatar = (req, res) => {
+  const file = req.params.file;
+  const filepath = path.resolve('./uploads/avatars/' + file);
 
-  return res.status(200).json({
-    status: 'success',
-    message: 'Metodo de sacar imagen de avatar de usuario'
+  // comprobar existencia de forma sencilla
+  if (fs.existsSync(filepath)) {
+    return res.sendFile(filepath);
+  }
+  
+  return res.status(404).json({
+    status: 'error',
+    message: 'La imagen de avatar no existe'
   });
 }
 
