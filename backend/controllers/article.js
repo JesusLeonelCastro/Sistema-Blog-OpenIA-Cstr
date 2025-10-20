@@ -1,6 +1,8 @@
 //importaciones 
 const validate = require('../helpers/validate-article');
 const Article = require('../models/article');
+const path = require('path');
+const fs = require('fs');
 
 
 //metodos
@@ -256,9 +258,9 @@ const remove = async (req, res) => {
         const userId = userIdentity.sub || userIdentity._id || userIdentity.id;
         if (!userId) {
             return res.status(401).json(
-                { 
-                    status: 'error', 
-                    message: 'No autorizado' 
+                {
+                    status: 'error',
+                    message: 'No autorizado'
                 });
         }
 
@@ -266,18 +268,18 @@ const remove = async (req, res) => {
         const article = await Article.findById(id).exec();
         if (!article) {
             return res.status(404).json(
-                { 
-                    status: 'error', 
-                    message: 'Artículo no encontrado' 
+                {
+                    status: 'error',
+                    message: 'Artículo no encontrado'
                 });
         }
 
         // comprobar propietario
         if (article.user.toString() !== userId.toString()) {
             return res.status(403).json(
-                { 
-                    status: 'error', 
-                    message: 'No tienes permiso para eliminar este artículo' 
+                {
+                    status: 'error',
+                    message: 'No tienes permiso para eliminar este artículo'
                 });
         }
 
@@ -299,16 +301,16 @@ const remove = async (req, res) => {
         await Article.findByIdAndDelete(id).exec();
 
         return res.status(200).json(
-            { 
-                status: 'success', 
-                message: 'Artículo eliminado correctamente', id 
+            {
+                status: 'success',
+                message: 'Artículo eliminado correctamente', id
             });
     } catch (err) {
         return res.status(500).json(
-            { 
-                status: 'error', 
-                message: 'Error al eliminar el artículo', 
-                details: err?.message || String(err) 
+            {
+                status: 'error',
+                message: 'Error al eliminar el artículo',
+                details: err?.message || String(err)
             });
     }
 }
@@ -316,7 +318,7 @@ const remove = async (req, res) => {
 //Metodo listar articulos de un usuario
 const byUser = (req, res) => {
 
-     //sacar los parametros de la url
+    //sacar los parametros de la url
     let params = req.params;
     //controlar la pagina
     let page = 1;
@@ -336,7 +338,7 @@ const byUser = (req, res) => {
         }
     };
     //consutlar y listar  los articulos con mongoose pagination
-    Article.paginate({user : req.params.userId}, options, (err, articles) => {
+    Article.paginate({ user: req.params.userId }, options, (err, articles) => {
         if (err || !articles) {
 
             return res.status(500).json({
@@ -357,27 +359,156 @@ const byUser = (req, res) => {
     });
 }
 
-const search = (req, res) => {
+//Metodo buscar articulos
+const search = async (req, res) => {
 
-    return res.status(200).json({
-        status: 'success',
-        message: 'Metodo de buscar articulos'
-    });
+    try {
+        // aceptar tanto /search/:search como /search?search=texto
+        const q = (req.params.search || req.query.search || '').trim();
+        if (!q) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Falta el término de búsqueda'
+            });
+        }
+
+        // construir regex (insensible)
+        const regex = new RegExp(q, 'i');
+
+        // buscar en título y contenido
+        const articles = await Article.find({
+            $or: [
+                { title: regex },
+                { content: regex }
+            ]
+        })
+            .populate('user', '-password -__v')
+            .sort({ createdAt: -1 }) // ajusta al campo de fecha que uses
+            .exec();
+
+        if (!articles || articles.length === 0) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'No se han encontrado artículos'
+            });
+        }
+
+        return res.status(200).json({
+            status: 'success',
+            message: 'Artículos encontrados',
+            total: articles.length,
+            articles
+        });
+    } catch (err) {
+        return res.status(500).json({
+            status: 'error',
+            message: 'Error en la búsqueda de artículos',
+            details: err?.message || String(err)
+        });
+    }
 }
 
-const upload = (req, res) => {
+const upload = async (req, res) => {
+    // id del artículo viene por params
+    const articleId = req.params.id;
 
-    return res.status(200).json({
-        status: 'success',
-        message: 'Metodo de subir articulos'
-    });
+    // id del usuario identificado desde el token (req.user)
+    const userIdentity = req.user || {};
+    const userId = userIdentity.sub || userIdentity._id || userIdentity.id;
+    if (!userId) {
+        return res.status(401).json({ status: 'error', message: 'No autorizado' });
+    }
+
+    // comprobar fichero
+    if (!req.file) {
+        return res.status(400).json(
+            {
+                status: 'error', message: 'La petición no incluye la imagen del artículo'
+            }
+        );
+    }
+
+    try {
+        const originalname = req.file.originalname || '';
+        const filename = req.file.filename || '';
+        const filePath = req.file.path || (req.file.destination && filename ? path.join(req.file.destination, filename) : undefined);
+
+        const ext = path.extname(originalname || filename).toLowerCase();
+        const validExtensions = ['.png', '.jpg', '.jpeg', '.gif'];
+        if (!validExtensions.includes(ext)) {
+            if (filePath) try { fs.unlinkSync(filePath); } catch (e) { }
+            return res.status(400).json(
+                { status: 'error', 
+                    message: 'La imagen no tiene una extensión válida' }
+            );
+        }
+
+        const mongoose = require('mongoose');
+        if (!mongoose.Types.ObjectId.isValid(articleId)) {
+            if (filePath) try { fs.unlinkSync(filePath); } catch (e) { }
+            return res.status(400).json(
+                { status: 'error', 
+                    message: 'ID de artículo inválido' }
+            );
+        }
+
+        const article = await Article.findById(articleId).exec();
+        if (!article) {
+            if (filePath) try { fs.unlinkSync(filePath); } catch (e) { }
+            return res.status(404).json(
+                { status: 'error', 
+                    message: 'Articulo no encontrado' }
+            );
+        }
+
+        if (article.user.toString() !== userId.toString()) {
+            if (filePath) try { fs.unlinkSync(filePath); } catch (e) { }
+            return res.status(403).json(
+                { status: 'error', 
+                    message: 'No tienes permiso para modificar este artículo' }
+            );
+        }
+
+        // Actualiza el campo que use tu modelo. Aquí actualizo 'image' y 'poster' por compatibilidad.
+        const articleToUpdate = await Article.findByIdAndUpdate(
+            articleId,
+            { image: filename, poster: filename },
+            { new: true }
+        ).select('-__v');
+
+        // construir URL pública para la imagen (ajusta si usas otro host/puerto)
+        const imageUrl = `${req.protocol}://${req.get('host')}/api/article/poster/${encodeURIComponent(filename)}`;
+
+        return res.status(200).json({
+            status: 'success',
+            message: 'Imagen de articulo subida correctamente',
+            article: articleToUpdate,
+            image_url: imageUrl
+        });
+
+    } catch (err) {
+        if (req.file?.path) {
+            try { fs.unlinkSync(req.file.path); } catch (e) { }
+        }
+        return res.status(500).json({
+            status: 'error',
+            message: 'Error al subir la imagen del artículo',
+            details: err?.message || String(err)
+        });
+    }
 }
 
 const poster = (req, res) => {
+    const file = req.params.file;
+    const filePath = path.resolve('./uploads/posters/' + file);
 
-    return res.status(200).json({
-        status: 'success',
-        message: 'Metodo de sacar la imagen del articulos'
+    if (fs.existsSync(filePath)) {
+        return res.sendFile(filePath);
+    }
+
+    return res.status(404).json({
+        status: 'error',
+        message: 'La imagen del artículo no existe'
     });
 }
 

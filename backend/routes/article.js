@@ -31,7 +31,7 @@ router.put('/update', auth, ArticleController.update);
 router.delete('/remove/:id', auth, ArticleController.remove);
 router.get('/by-user/:userId/:page', auth, ArticleController.byUser);
 router.get('/search/:search', auth, ArticleController.search);
-router.put('/upload/:id', auth, ArticleController.upload);
+router.put('/upload/:id', [auth, uploadsPoster.single('file0')], ArticleController.upload);
 router.get('/poster/:file', auth, ArticleController.poster);
 
 //exportaciones
