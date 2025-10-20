@@ -1,6 +1,7 @@
 //importaciones 
 const { Schema, model } = require('mongoose');
 const user = require('./user');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 //deficion de schema - entidades
 
@@ -31,6 +32,7 @@ const articleSchema = new Schema({
     }
 });
 
+articleSchema.plugin(mongoosePaginate);
 //exportar modelo 
 
 module.exports = model('Article', articleSchema, "articles");
