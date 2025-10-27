@@ -1,17 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs/internal/Observable';
+import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class UserService {
+  private readonly apiUrl = 'http://localhost:3907/api';
 
-  API_URL: string = 'http://localhost:3907/api/user/listusers';
-  constructor( private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) {}
 
-  getusers() : Observable <any> {
-    return this.httpClient.get(this.API_URL).pipe(res => res);
+  listUsers(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}/user/listusers`);
   }
-  
 }
