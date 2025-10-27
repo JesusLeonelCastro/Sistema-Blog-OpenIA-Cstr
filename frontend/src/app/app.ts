@@ -1,11 +1,12 @@
 // ...existing code...
 import { Component, OnInit, AfterViewInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { Home } from './components/home/home';  
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet , Home ],
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })

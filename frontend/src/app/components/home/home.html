@@ -1,0 +1,40 @@
+<div class="bg-black hover:bg-gray-900">
+    <h1 class="text-6xl text-center font-normal text-white p-5 m-2 ">Lista de Usuarios</h1>
+</div>
+
+
+ <div class="relative overflow-x-auto shadow-md sm:rounded-lg m-4">
+  <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+      <tr>
+        <th scope="col" class="px-6 py-3">ID</th>
+        <th scope="col" class="px-6 py-3">Nombre</th>
+        <th scope="col" class="px-6 py-3">Apellido</th>
+        <th scope="col" class="px-6 py-3">Nick</th>
+        <th scope="col" class="px-6 py-3">Avatar</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (user of userlist; track user.id) {
+        <tr class="bg-white border-b border-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-600">
+          <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            {{ user.id }}
+          </th>
+          <td class="px-6 py-4">
+            {{ user.name }}
+          </td>
+          <td class="px-6 py-4">
+            {{ user.surname }}
+          </td>
+          <td class="px-6 py-4">
+            {{ user.nick }}
+          </td>
+          <td class="px-6 py-4 text-right">
+            <img [src]="user.avatar" alt="Avatar de {{ user.name }}" class="w-14 h-14 object-cover inline-block ring-2 ring-indigo-300 dark:ring-indigo-500">
+          </td>
+
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
