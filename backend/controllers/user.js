@@ -302,6 +302,23 @@ const soloparaUsuariosIdentificados = (req, res) => {
   });
 }
 
+//listar todos los usuarios  /// falta implementar paginacion
+const listusers = async (req, res) => {
+  try {
+    const users = await User.find().select('-password -email -created_At');
+    return res.status(200).json({
+      status: 'success',
+      users: users
+    });
+  } catch (err) {
+    return res.status(500).json({
+      status: 'error',    
+      message: 'Error al listar los usuarios',
+      details: err?.message || String(err)
+    });
+  }
+}
+
 //exportaciones
 module.exports = {
   register,
@@ -310,5 +327,6 @@ module.exports = {
   update,
   upload,
   soloparaUsuariosIdentificados,
-  avatar
+  avatar,
+  listusers
 };

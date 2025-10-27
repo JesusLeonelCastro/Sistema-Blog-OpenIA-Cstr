@@ -27,6 +27,7 @@ routes.put('/update', auth, userController.update);
 routes.put('/upload', [auth, uploadsAvatar.single('file0')], userController.upload);
 routes.get('/avatar/:file', userController.avatar);
 routes.get('/soloparaidentificados', auth, userController.soloparaUsuariosIdentificados);
+routes.get('/listusers', userController.listusers);
 
 //exportar rutas
 module.exports = routes    
