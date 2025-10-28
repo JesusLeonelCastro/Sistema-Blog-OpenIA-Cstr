@@ -24,7 +24,6 @@ export class Home  implements OnInit{
     this.UserService.listUsers().subscribe({
       next: (result) => {
         this.userlist = result.users;
-        console.log(this.userlist);
 
 
       }, error: (error) => {

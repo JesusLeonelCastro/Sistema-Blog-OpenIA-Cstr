@@ -2,11 +2,13 @@
 import { Component, OnInit, AfterViewInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Home } from './components/home/home';  
+import { Header } from './components/header/header';
+import { Footer } from './components/footer/footer';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet , Home ],
+  imports: [RouterOutlet , Home , Header , Footer],
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })
