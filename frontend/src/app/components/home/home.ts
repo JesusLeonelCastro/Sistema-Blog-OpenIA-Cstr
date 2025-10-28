@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-
 import { UserService } from '../../service/user.service';
 import { UserInterface } from '../../interface/user.interface';
+import { Header } from "../header/header";
+import { Footer } from '../footer/footer';
 
 @Component({
   selector: 'app-home',
-  imports: [],
+  imports: [Header , Footer],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
