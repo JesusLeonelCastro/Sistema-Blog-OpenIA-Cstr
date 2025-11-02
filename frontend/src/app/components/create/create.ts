@@ -12,9 +12,9 @@ import { UserService } from '../../service/user.service';
   styleUrl: './create.css'
 })
 export class Create {
-  private readonly fb = inject(FormBuilder);
-  private readonly userService = inject(UserService);
-  private readonly router = inject(Router);
+  private fb = inject(FormBuilder);
+  private users = inject(UserService);
+  private router = inject(Router);
 
   form = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(60)]],
@@ -27,14 +27,19 @@ export class Create {
   error = '';
 
   submit(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.submitting = true;
     this.error = '';
 
-    this.userService.createUser(this.form.value).subscribe({
-      next: () => this.router.navigate(['/home']),
+    this.users.createUser(this.form.value).subscribe({
+      next: () => this.router.navigate(['/login']),
       error: err => {
-        this.error = err.error?.message ?? 'No se pudo crear el usuario';
+        const message = err.error?.message ?? 'No se pudo registrar';
+        this.error = message;
+
+        this.form.get('nick')?.setErrors({ backend: true });
+        this.form.get('email')?.setErrors({ backend: true });
+        this.form.markAllAsTouched();
         this.submitting = false;
       }
     });
