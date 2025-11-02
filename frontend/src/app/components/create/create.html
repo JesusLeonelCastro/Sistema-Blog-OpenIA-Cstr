@@ -1,0 +1,68 @@
+<section>
+
+    <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+        
+             <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16 ">
+        <h2 class=" text-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">Crear nuevo usuario</h2>
+
+        <form class="grid gap-6" [formGroup]="form" (ngSubmit)="submit()">
+            <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                        for="name">Nombre</label>
+                    <input id="name" type="text" formControlName="name"
+                        class="w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        placeholder="Ingresa el nombre">
+                </div>
+
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                        for="surname">Apellido</label>
+                    <input id="surname" type="text" formControlName="surname"
+                        class="w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        placeholder="Ingresa el apellido">
+                </div>
+
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="nick">Nick</label>
+                    <input id="nick" type="text" formControlName="nick"
+                        class="w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        placeholder="Ingresa el nick">
+                </div>
+
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                        for="email">Correo</label>
+                    <input id="email" type="email" formControlName="email"
+                        class="w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        placeholder="name@correo.com">
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                        for="password">Contraseña</label>
+                    <input id="password" type="password" formControlName="password"
+                        class="w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        placeholder="••••••••">
+                </div>
+            </div>
+
+            @if (error) {
+            <p class="text-sm text-red-500">{{ error }}</p>
+            }
+
+            <button type="submit" [disabled]="submitting"
+                class="w-full text-white bg-blue-600 hover:bg-blue-700 p-2.5 rounded-lg">
+                {{ submitting ? 'Guardando…' : 'Crear usuario' }}
+            </button>
+        </form>
+    </div>
+        
+        </div>
+    </div>
+
+
+   
+
+</section>

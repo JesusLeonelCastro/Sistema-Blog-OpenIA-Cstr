@@ -11,4 +11,9 @@ export class UserService {
   listUsers(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}/user/listusers`);
   }
+
+  createUser(userData: any): Observable<any> {
+    return this.httpClient.post(`${this.apiUrl}/user/register`, userData);
+  }
+
 }
