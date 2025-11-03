@@ -3,16 +3,17 @@ import { Login } from './components/login/login';
 import { Home } from './components/home/home';
 import { Create } from './components/create/create';
 import { Users } from './components/users/users';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', component: Login },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
    
   { path: 'login', component: Login },
-  { path: 'home', component: Home },
-  { path: 'create', component: Create },
-  { path: 'users', component: Users },
- 
+  { path: 'create', component: Create  },
 
-  { path: '**', redirectTo: '' },
+  { path: 'home', component: Home, canActivate: [authGuard] },
+  { path: 'users', component: Users, canActivate: [authGuard] }, 
+
+  { path: '**', redirectTo: 'login' },
 
 ];
