@@ -1,59 +1,93 @@
-# Frontend
+# Frontend · Sistema Blog CSTR
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.7.
+Aplicación Angular (standalone + SSR) para el panel del blog.
 
-## Development server
+## Requisitos
 
-To start a local development server, run:
+- Node.js 20+
+- Angular CLI `npm install -g @angular/cli`
+- Backend corriendo en `http://localhost:3907`
 
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Scripts
 
 ```bash
-ng generate component component-name
+ng serve          # Dev + Hot Reload (http://localhost:4200)
+ng build          # Build producción (dist/frontend)
+ng test           # Unit tests con Karma
+ng e2e            # E2E tests (si se configura)
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Estructura destacada
+
+- `src/app/components/*` componentes standalone (login, create, home, header, footer…)
+- `src/app/service/user.service.ts` llamadas HTTP al backend (`/api/user/...`)
+- `src/app/guards/auth.guard.ts` protege rutas (requiere token en `localStorage`)
+- `src/app/app.routes.ts` rutas + guard
+- `src/styles.css` Tailwind + Flowbite
+
+## Autenticación y rutas
+
+1. Login guarda `token` y `user` en `localStorage`.
+2. Guard revisa el token y redirige al `/login` si no existe.
+3. Botón “Cerrar sesión” limpia el almacenamiento y redirige.
+
+## Tema claro/oscuro
+
+- Tailwind `darkMode: 'class'`
+- Botón en el header alterna clase `dark` en `<html>` y persiste en `localStorage`.
+
+## Backend esperado
+
+Endpoints:
+
+- `POST /api/user/login`
+- `POST /api/user/register`
+- `GET /api/user/list` (u otros usados en `UserService`)
+
+Mantén el backend sincronizado para evitar errores de autenticación.# Frontend · Sistema Blog CSTR
+
+Aplicación Angular (standalone + SSR) para el panel del blog.
+
+## Requisitos
+
+- Node.js 20+
+- Angular CLI `npm install -g @angular/cli`
+- Backend corriendo en `http://localhost:3907`
+
+## Scripts
 
 ```bash
-ng generate --help
+ng serve          # Dev + Hot Reload (http://localhost:4200)
+ng build          # Build producción (dist/frontend)
+ng test           # Unit tests con Karma
+ng e2e            # E2E tests (si se configura)
 ```
 
-## Building
+## Estructura destacada
 
-To build the project run:
+- `src/app/components/*` componentes standalone (login, create, home, header, footer…)
+- `src/app/service/user.service.ts` llamadas HTTP al backend (`/api/user/...`)
+- `src/app/guards/auth.guard.ts` protege rutas (requiere token en `localStorage`)
+- `src/app/app.routes.ts` rutas + guard
+- `src/styles.css` Tailwind + Flowbite
 
-```bash
-ng build
-```
+## Autenticación y rutas
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+1. Login guarda `token` y `user` en `localStorage`.
+2. Guard revisa el token y redirige al `/login` si no existe.
+3. Botón “Cerrar sesión” limpia el almacenamiento y redirige.
 
-## Running unit tests
+## Tema claro/oscuro
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+- Tailwind `darkMode: 'class'`
+- Botón en el header alterna clase `dark` en `<html>` y persiste en `localStorage`.
 
-```bash
-ng test
-```
+## Backend esperado
 
-## Running end-to-end tests
+Endpoints:
 
-For end-to-end (e2e) testing, run:
+- `POST /api/user/login`
+- `POST /api/user/register`
+- `GET /api/user/list` (u otros usados en `UserService`)
 
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Mantén el backend sincronizado para evitar errores de autenticación.
