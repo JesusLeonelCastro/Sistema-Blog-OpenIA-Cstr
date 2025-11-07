@@ -9,7 +9,6 @@
         <th scope="col" class="px-6 py-3">Nombre</th>
         <th scope="col" class="px-6 py-3">Apellido</th>
         <th scope="col" class="px-6 py-3">Nick</th>
-        <th scope="col" class="px-6 py-3">Avatar</th>
       </tr>
     </thead>
     <tbody>
@@ -27,10 +26,7 @@
           <td class="px-6 py-4">
             {{ user.nick }}
           </td>
-          <td class="px-6 py-4 text-right">
-            <img [src]="user.avatar" alt="Avatar de {{ user.name }}" class="w-14 h-14 object-cover inline-block ring-2 ring-indigo-300 dark:ring-indigo-500">
-          </td>
-
+          
         </tr>
       }
     </tbody>

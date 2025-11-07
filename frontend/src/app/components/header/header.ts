@@ -1,17 +1,18 @@
 import { Component, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterModule , Router} from '@angular/router';
+import { signal } from '@angular/core';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [RouterModule],
   templateUrl: './header.html',
-  styleUrls: ['./header.css'], // ✅ plural correcto
+  styleUrls: ['./header.css'],
 })
 export class Header {
   
-private readonly storageKey = 'theme';
+  private readonly storageKey = 'theme';
   private readonly platformId = inject(PLATFORM_ID);
   private readonly router = inject(Router);
 
@@ -35,11 +36,26 @@ private readonly storageKey = 'theme';
     localStorage.setItem(this.storageKey, isDark ? 'dark' : 'light');
   }
 
-  logout(): void {
+  menuOpen = signal(false);
+  mobileOpen = signal(false);
+
+  toggleMenu(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.menuOpen.update(v => !v);
+  }
+
+  closeMenu(): void {
+    setTimeout(() => this.menuOpen.set(false));
+  }
+
+   logout(): void {
     if (!isPlatformBrowser(this.platformId)) return;
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     this.router.navigate(['/login']);
   }
-  
+
+  toggleMobile(): void {
+    this.mobileOpen.update(v => !v);
+  }
 }

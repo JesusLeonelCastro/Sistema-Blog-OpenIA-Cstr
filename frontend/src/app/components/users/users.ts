@@ -14,11 +14,13 @@ import { Footer } from '../footer/footer';
 export class Users  implements OnInit{
 
   userlist : UserInterface[] = [];
+  profile: any = null;
 
   constructor(private UserService: UserService) { }
 
   ngOnInit(): void {
     this.getUsers();
+
      
   }
 
@@ -30,6 +32,17 @@ export class Users  implements OnInit{
 
       }, error: (error) => {
         console.error('Hubo un error al obtener los usuarios:', error);
+      }
+    });
+  }
+
+  getUserProfile(userId: number) {
+    this.UserService.getUserProfile(userId).subscribe({
+      next: (result) => {
+        console.log('Perfil del usuario:', result);
+      },
+      error: (error) => {
+        console.error('Hubo un error al obtener el perfil del usuario:', error);
       }
     });
   }

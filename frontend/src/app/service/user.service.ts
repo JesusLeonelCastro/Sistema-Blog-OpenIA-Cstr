@@ -20,4 +20,8 @@ export class UserService {
     return this.httpClient.post(`${this.apiUrl}/user/login`, credentials);
   }
 
+  getUserProfile(userId: number): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}/user/profile/${userId}`);
+  }
+
 }
