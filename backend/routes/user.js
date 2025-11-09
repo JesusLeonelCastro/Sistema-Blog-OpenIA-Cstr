@@ -23,7 +23,7 @@ const uploadsAvatar = multer({ storage: storage });
 routes.post('/register', userController.register);
 routes.post('/login', userController.login);
 routes.get('/profile/:id', userController.profile);
-routes.put('/update', auth, userController.update);
+routes.put('/update/:id', auth, userController.update);
 routes.put('/upload', [auth, uploadsAvatar.single('file0')], userController.upload);
 routes.get('/avatar/:file', userController.avatar);
 routes.get('/soloparaidentificados', auth, userController.soloparaUsuariosIdentificados);

@@ -169,37 +169,80 @@ const profile = async (req, res) => {
 
 //Metodo actualizar usuario
 const update = async (req, res) => {
-
   try {
-    // id del usuario identificado en el token (sub, _id o id según tu payload)
+    // Obtener id del usuario desde el token (req.user)
     const userIdentity = req.user || {};
     const userId = userIdentity.sub || userIdentity._id || userIdentity.id;
     if (!userId) {
       return res.status(401).json({ status: 'error', message: 'No autorizado' });
     }
 
-    // construir objeto con los campos a actualizar (usar req, no request)
-    const userToUpdate = {
-      name: req.body.name ?? userIdentity.name,
-      surname: req.body.surname ?? userIdentity.surname,
-      nick: req.body.nick ?? userIdentity.nick,
-      email: req.body.email ?? userIdentity.email,
-      bio: req.body.bio ?? userIdentity.bio
-    };
+    // Normalizar y extraer campos del body
+    const body = req.body || {};
+    const name = String(body.name ?? '').trim();
+    const surname = String(body.surname ?? '').trim();
+    const nick = String(body.nick ?? '').toLowerCase().trim();
+    const email = String(body.email ?? '').toLowerCase().trim();
+    const bio = body.bio ?? userIdentity.bio ?? '';
 
-    // validar datos (si tu validate admite segundo parámetro para update)
-    validate(userToUpdate, false);
-
-    // comprobar duplicados (email o nick) excluyendo al propio usuario
-    const duplicate = await User.findOne({
-      $or: [{ email: userToUpdate.email }, { nick: userToUpdate.nick }]
-    }).exec();
-
-    if (duplicate && duplicate._id.toString() !== userId.toString()) {
-      return res.status(400).json({ status: 'error', message: 'El email o nick ya está en uso' });
+    // Validaciones básicas
+    if (!name) {
+      return res.status(400).json({ status: 'error', message: 'El nombre es requerido' });
+    }
+    if (!nick) {
+      return res.status(400).json({ status: 'error', message: 'El nick es requerido' });
+    }
+    if (!email) {
+      return res.status(400).json({ status: 'error', message: 'El email es requerido' });
+    }
+    // Validar formato de email simple
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ status: 'error', message: 'El email no tiene un formato válido' });
     }
 
-    // actualizar en la BD y devolver el nuevo documento (sin password)
+    // Construir objeto con los campos a actualizar
+    const userToUpdate = {
+      name,
+      surname,
+      nick,
+      email,
+      bio
+    };
+
+    // (Opcional) Validaciones adicionales con helper existente
+    try {
+      validate(userToUpdate, false);
+    } catch (validationErr) {
+      return res.status(400).json({ status: 'error', message: 'Validación no superada', details: validationErr?.message || String(validationErr) });
+    }
+
+    const duplicate = await User.findOne({
+      $or: [{ email: userToUpdate.email }, { nick: userToUpdate.nick }],
+      _id: { $ne: userId }
+    }).exec();
+
+    if (duplicate) {
+      const field = duplicate.email === userToUpdate.email ? 'email' : 'nick';
+      return res.status(400).json({ status: 'error', message: `El ${field} ya está en uso por otro usuario` });
+    }
+
+    const current = await User.findById(userId).select('-password');
+    if (!current) {
+      return res.status(404).json({ status: 'error', message: 'Usuario no encontrado' });
+    }
+
+    const noChanges =
+      current.name === userToUpdate.name &&
+      (current.surname ?? '') === (userToUpdate.surname ?? '') &&
+      String((current.nick ?? '').toLowerCase()) === userToUpdate.nick &&
+      String((current.email ?? '').toLowerCase()) === userToUpdate.email &&
+      (current.bio ?? '') === (userToUpdate.bio ?? '');
+
+    if (noChanges) {
+      return res.status(200).json({ status: 'success', message: 'No hay cambios para actualizar', user: current });
+    }
+
     const updatedUser = await User.findByIdAndUpdate(userId, userToUpdate, { new: true }).select('-password');
     if (!updatedUser) {
       return res.status(404).json({ status: 'error', message: 'Usuario no encontrado' });
@@ -217,8 +260,7 @@ const update = async (req, res) => {
       details: err?.message || String(err)
     });
   }
-
-}
+};
 
 //Metodo subir avatar de usuario /// falta arregla algo
 const upload = async (req, res) => {

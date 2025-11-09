@@ -2,7 +2,7 @@
 
     <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <div
-            class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md x dark:bg-gray-800 dark:border-gray-700l:p-0 ">
+            class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md x dark:bg-gray-800 dark:border-gray-700 :p-0 ">
 
             <div class="py-5 px-5 mx-auto max-w-2xl lg:py-5 ">
                 <h2 class=" text-left mb-6 text-2xl font-semibold text-gray-900 dark:text-white">Crear nuevo usuario
@@ -60,6 +60,12 @@
                         class="w-full text-white bg-blue-600 hover:bg-blue-700 p-2.5 rounded-lg">
                         {{ submitting ? 'Registrando…' : 'Crear usuario' }}
                     </button>
+                    <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+
+                        <a href="/login"
+                            class="font-medium text-primary-600 hover:underline dark:text-primary-500">login</a>
+                    </p>
+
                 </form>
             </div>
 

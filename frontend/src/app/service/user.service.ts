@@ -27,4 +27,11 @@ export class UserService {
     });
   }
 
+  updateUser(userId: string, payload: any): Observable<any> {
+  const token = localStorage.getItem('token') ?? '';
+  return this.httpClient.put(`${this.apiUrl}/user/update/${userId}`, payload, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+
 }
