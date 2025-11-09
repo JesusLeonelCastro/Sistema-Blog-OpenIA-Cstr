@@ -142,8 +142,8 @@ const profile = async (req, res) => {
 
       .select({
         password: 0,
-        created_At: 0,
-        email: 0
+        created_At: 0
+        
       });
 
     if (!myUser) {
@@ -305,7 +305,7 @@ const soloparaUsuariosIdentificados = (req, res) => {
 //listar todos los usuarios  /// falta implementar paginacion
 const listusers = async (req, res) => {
   try {
-    const users = await User.find().select('-password -email -created_At');
+    const users = await User.find().select('-password -created_At');
     return res.status(200).json({
       status: 'success',
       users: users
