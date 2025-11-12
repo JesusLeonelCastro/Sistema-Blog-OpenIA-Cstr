@@ -1,0 +1,23 @@
+
+
+ <section class="p-4">
+    <h2 class="text-xl mb-4">Artículos</h2>
+
+    <div *ngIf="loading">Cargando...</div>
+    <div *ngIf="error" class="text-red-600">{{ error }}</div>
+
+    <ul *ngIf="!loading && articles.length">
+        <li *ngFor="let a of articles" class="mb-4 border-b pb-3">
+            <h3 class="font-semibold">{{ a.title }}</h3>
+            <p class="text-sm text-gray-600">Autor: {{ a.user?.name ?? a.user?.nick }}</p>
+            <p class="mt-2">{{ a.content ? (a.content) + '...' : '' }}</p>
+        </li>
+    </ul>
+
+    <div class="flex gap-2 mt-4">
+        <button (click)="prev()" [disabled]="page === 1" class="px-3 py-1 border rounded">Anterior</button>
+        <span class="px-2 py-1">Página {{ page }}</span>
+        <button (click)="next()" [disabled]="page * itemsPerPage >= total"
+            class="px-3 py-1 border rounded">Siguiente</button>
+    </div>
+</section>
