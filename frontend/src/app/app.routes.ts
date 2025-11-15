@@ -8,9 +8,10 @@ import { Profile } from './components/profile/profile';
 import { Update } from './components/update/update';
 import { Articles } from './components/article/article';
 import { Createarticle } from './components/createarticle/createarticle';
+import { Articleprofile } from './components/articleprofile/articleprofile';
 
 export const routes: Routes = [
-  
+
   { path: '', redirectTo: 'login', pathMatch: 'full' },
    
   { path: 'login', component: Login },
@@ -22,6 +23,7 @@ export const routes: Routes = [
   { path: 'update', component: Update, canActivate: [authGuard] },
   { path: 'article', component: Articles, canActivate: [authGuard] },
   { path: 'createarticle', component: Createarticle, canActivate: [authGuard] },
+  { path: 'myarticles', component: Articleprofile, canActivate: [authGuard] },
 
 
   { path: '**', redirectTo: 'login' },

@@ -21,5 +21,11 @@ export class ArticleService {
     return this.httpClient.post(`${this.apiUrl}/article/save`, payload, { headers });
   }
 
+  listByUser(userId: string, page = 1): Observable<any> {
+    const token = localStorage.getItem('token') ?? '';
+    const headers = token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : undefined;
+    return this.httpClient.get(`${this.apiUrl}/article/by-user/${userId}/${page}`, { headers } as any);
+  }
+
 
 }
