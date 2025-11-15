@@ -1,10 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { ArticleService } from '../../service/article.service';
 import { Footer } from "../footer/footer";
+import { Header } from '../header/header';
+import { RouterModule } from '@angular/router';
+
 
 @Component({
   selector: 'app-article',
-  imports: [Footer],
+  standalone: true,
+  imports: [Footer, Header , RouterModule],
   templateUrl: './article.html',
   styleUrl: './article.css',
 })

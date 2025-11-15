@@ -1,8 +1,12 @@
 
-
+<app-header></app-header>
  <section class="p-4">
     <h2 class="text-xl mb-4">Artículos</h2>
 
+    <a routerLink="/createarticle" class="inline-block bg-blue-700 p-2 rounded-md hover:bg-blue-800 text-white">
+    Crear Articulo
+    </a>
+    
     <div *ngIf="loading">Cargando...</div>
     <div *ngIf="error" class="text-red-600">{{ error }}</div>
 
@@ -21,3 +25,5 @@
             class="px-3 py-1 border rounded">Siguiente</button>
     </div>
 </section>
+
+<app-footer></app-footer>
