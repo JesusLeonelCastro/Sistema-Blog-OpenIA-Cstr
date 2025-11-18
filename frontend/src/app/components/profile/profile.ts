@@ -3,11 +3,12 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Header } from '../header/header';
 import { Footer } from '../footer/footer';
 import { UserService } from '../../service/user.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, Header, Footer],
+  imports: [CommonModule, Header, Footer, RouterModule],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
