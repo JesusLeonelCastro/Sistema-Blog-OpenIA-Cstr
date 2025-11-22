@@ -1,29 +1,46 @@
-
 <app-header></app-header>
- <section class="p-4">
-    <h1 class="text-xl mb-4 text-center">Todos los Artículos</h1>
 
-    <a routerLink="/createarticle" class="inline-block bg-blue-700 p-2 rounded-md hover:bg-blue-800 text-white">
-    Crear Articulo
-    </a>
+<section class="p-6 max-w-6xl mx-auto">
 
-    <div *ngIf="loading">Cargando...</div>
-    <div *ngIf="error" class="text-red-600">{{ error }}</div>
+  <div class="flex items-center justify-between mb-4">
+        <a routerLink="/createarticle" class="inline-block bg-blue-700 p-2 rounded-md hover:bg-blue-800 text-white">Crear Articulo</a>
 
-    <ul *ngIf="!loading && articles.length">
-        <li *ngFor="let a of articles" class="mb-4 border-b pb-3">
-            <h3 class="font-semibold">{{ a.title }}</h3>
-            <p class="text-sm text-gray-600">Autor: {{ a.user?.name ?? a.user?.nick }}</p>
-            <p class="mt-2">{{ a.content ? (a.content) + '...' : '' }}</p>
-        </li>
-    </ul>
+        <div *ngIf="!loading && (articles.length > 0 || total > itemsPerPage)" class="flex items-center justify-center gap-3 mt-6">
+        <button (click)="prev()" [disabled]="page === 1"
+        class="px-4 py-2 rounded-lg border bg-blue-600  hover:bg-blue-800   disabled:opacity-50 text-white border-blue-600" >
+        Anterior
+        </button>
 
-    <div class="flex gap-2 mt-4">
-        <button (click)="prev()" [disabled]="page === 1" class="px-3 py-1 border rounded">Anterior</button>
-        <span class="px-2 py-1">Página {{ page }}</span>
-        <button (click)="next()" [disabled]="page * itemsPerPage >= total"
-            class="px-3 py-1 border rounded">Siguiente</button>
+        <div class="px-3 py-1 text-slate-300">Página {{ page }} / {{ pages }}</div>
+
+        <button (click)="next()" [disabled]="page >= pages"
+        class="px-4 py-2 rounded-lg border bg-blue-600 hover:bg-blue-800 disabled:opacity-50 text-white borde border-blue-600">
+        Siguiente
+        </button>
     </div>
+
+  </div>
+
+  <div *ngIf="loading" class="text-center py-12 text-slate-400">Cargando...</div>
+  <div *ngIf="error" class="text-red-600">{{ error }}</div>
+
+  <div *ngIf="!loading && articles.length" class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    <article *ngFor="let a of articles" class="rounded-xl bg-slate-800 p-4 shadow-md">
+      <div class="mb-3">
+        <h3 class="text-lg font-semibold text-white">{{ a.title }}</h3>
+        <p class="text-sm text-slate-400">por {{ a.user?.name ?? a.user?.nick }}</p>
+      </div>
+      <p class="text-sm text-slate-300 mb-4">{{ a.content ? (a.content | slice:0:160) + '…' : (a.summary ?? '') }}</p>
+      <div class="flex items-center justify-between text-sm">
+        <time class="text-slate-400">{{ a.created_at || a.createdAt | date:'mediumDate' }}</time>
+        <a [routerLink]="['/article', a._id]" class="text-blue-400 ">Ver</a>
+      </div>
+    </article>
+  </div>
+
+  <div *ngIf="!loading && articles.length === 0" class="text-center py-12 text-slate-400">No hay artículos.</div>
+
+  
 </section>
 
 <app-footer></app-footer>

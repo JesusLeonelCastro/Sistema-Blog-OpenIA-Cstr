@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../service/user.service';
 
+
 @Component({
   selector: 'app-create',
   standalone: true,

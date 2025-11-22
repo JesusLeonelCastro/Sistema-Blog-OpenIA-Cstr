@@ -1,6 +1,7 @@
 // ...existing code...
 import { Component, OnInit, AfterViewInit, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { Home } from './components/home/home';  
 import { Header } from './components/header/header';
 import { Footer } from './components/footer/footer';
@@ -20,10 +21,8 @@ export class App implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    // sólo en navegador
     if (typeof document === 'undefined') return;
 
-    // import dinámico y seguro para evitar problemas en entornos no-browser
     import('flowbite')
       .then(({ initFlowbite }) => {
         try {
@@ -34,5 +33,5 @@ export class App implements OnInit, AfterViewInit {
       })
       .catch(err => console.error('Error cargando flowbite:', err));
   }
+
 }
-// ...existing code...

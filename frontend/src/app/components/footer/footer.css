@@ -1,0 +1,23 @@
+:host { display: block; width: 100%; }
+
+:root { --footer-height: 72px; }
+
+.app-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--footer-height);
+  z-index: 50;
+  background: transparent; /* inner div tiene el color */
+}
+
+.app-footer > div {
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 -2px 6px rgba(2,6,23,0.35);
+}
+/* Reserva espacio inferior igual a la altura del footer */

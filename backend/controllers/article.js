@@ -65,50 +65,43 @@ const save = async (req, res) => {
 }
 
 //Metodo listar articulos paginados
-const list = (req, res) => {
+const list = async (req, res) => {
+  try {
+    const page = Math.max(1, parseInt(req.params.page ?? req.query.page ?? '1', 10));
+    const limit = Math.min(100, parseInt(req.query.limit ?? '10', 10));
+    const skip = (page - 1) * limit;
 
-    //sacar los parametros de la url
-    let params = req.params;
-    //controlar la pagina
-    let page = 1;
+    // filtros opcionales (ajusta según tu esquema: published, search, category...)
+    const filter = {};
+    if (req.query.published === 'true') filter.published = true;
+    if (req.query.userId) filter.user = req.query.userId;
 
-    if (params.page) {
-        page = (params.page);
-    }
-    //configuracion de paginacion
-    const itemsPerPage = 10;
     const options = {
-        page,
-        limit: itemsPerPage,
-        sort: { created_at: -1 },
-        populate: {
-            path: 'user',
-            select: '-password -created_at -__v'
-        }
+      page,
+      limit,
+      sort: { created_at: -1 },
+      populate: { path: 'user', select: '-password -created_at -__v' }
     };
-    //consutlar y listar  los articulos con mongoose pagination
-    Article.paginate({}, options, (err, articles) => {
-        if (err || !articles) {
 
-            return res.status(500).json({
-                status: 'error',
-                message: 'Error al listar los articulos',
-                details: err?.message || String(err)
-            });
-        }
-        //devolver resultado (json)
-        return res.status(200).json({
-            status: 'success',
-            page,
-            itemsPerPage,
-            total: articles.totalDocs,
-            articles: articles.docs,
-            pages: Math.ceil(articles.totalDocs / itemsPerPage)
-        });
+    // si usas mongoose-paginate-v2 devuelve promise
+    const result = await Article.paginate(filter, options);
+
+    return res.status(200).json({
+      status: 'success',
+      page: result.page ?? page,
+      itemsPerPage: result.limit ?? limit,
+      total: result.totalDocs ?? 0,
+      articles: result.docs ?? [],
+      pages: result.totalPages ?? Math.ceil((result.totalDocs ?? 0) / limit)
     });
-
-}
-
+  } catch (err) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'Error al listar los articulos',
+      details: err?.message || String(err)
+    });
+  }
+};
 //Metodo detalle de articulo
 const detail = async (req, res) => {
 

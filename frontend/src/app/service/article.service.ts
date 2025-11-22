@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient , HttpHeaders} from '@angular/common/http';
+import { HttpClient , HttpHeaders , HttpParams} from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -9,7 +9,9 @@ export class ArticleService {
   constructor(private httpClient: HttpClient) {}
 
   listArticles(page = 1): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}/article/list/${page}`);
+    const token = localStorage.getItem('token') ?? '';
+    const headers = token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : undefined;
+    return this.httpClient.get(`${this.apiUrl}/article/list/${page}`, { headers } as any);
   }
 
   saveArticle(payload: any): Observable<any> {

@@ -1,22 +1,24 @@
+// ...existing code...
 import { Component, OnInit } from '@angular/core';
-import { ArticleService } from '../../service/article.service';
-import { Footer } from "../footer/footer";
-import { Header } from '../header/header';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-
+import { ArticleService } from '../../service/article.service';
+import { Header } from '../header/header';
+import { Footer } from '../footer/footer';
 
 @Component({
   selector: 'app-article',
   standalone: true,
-  imports: [Footer, Header , RouterModule],
+  imports: [CommonModule, RouterModule, Header, Footer],
   templateUrl: './article.html',
-  styleUrl: './article.css',
+  styleUrls: ['./article.css'],
 })
 export class Articles implements OnInit {
   articles: any[] = [];
   page = 1;
   itemsPerPage = 10;
   total = 0;
+  pages = 1;
   loading = false;
   error = '';
 
@@ -31,9 +33,12 @@ export class Articles implements OnInit {
     this.error = '';
     this.articleService.listArticles(this.page).subscribe({
       next: (res) => {
-        this.articles = res.articles ?? [];
-        this.total = res.total ?? 0;
-        this.itemsPerPage = res.itemsPerPage ?? this.itemsPerPage;
+        console.log('listArticles response:', res);
+        this.articles = res.articles ?? res.docs ?? [];
+        this.total = res.total ?? res.totalDocs ?? 0;
+        this.itemsPerPage = res.itemsPerPage ?? res.limit ?? this.itemsPerPage;
+        this.pages = Math.max(1, Math.ceil(this.total / this.itemsPerPage));
+        console.log({ page: this.page, itemsPerPage: this.itemsPerPage, total: this.total, pages: this.pages, articlesLen: this.articles.length });
         this.loading = false;
       },
       error: (err) => {
@@ -58,3 +63,4 @@ export class Articles implements OnInit {
     }
   }
 }
+// ...existing code...
