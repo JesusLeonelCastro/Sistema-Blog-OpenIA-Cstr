@@ -1,5 +1,4 @@
-// ...existing code...
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ArticleService } from '../../service/article.service';
@@ -22,7 +21,7 @@ export class Articles implements OnInit {
   loading = false;
   error = '';
 
-  constructor(private articleService: ArticleService) {}
+  constructor(private articleService: ArticleService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.load();
@@ -38,13 +37,16 @@ export class Articles implements OnInit {
         this.total = res.total ?? res.totalDocs ?? 0;
         this.itemsPerPage = res.itemsPerPage ?? res.limit ?? this.itemsPerPage;
         this.pages = Math.max(1, Math.ceil(this.total / this.itemsPerPage));
-        console.log({ page: this.page, itemsPerPage: this.itemsPerPage, total: this.total, pages: this.pages, articlesLen: this.articles.length });
         this.loading = false;
+
+        // FORZAR detección de cambios para que el template se actualice inmediatamente
+        try { this.cdr.detectChanges(); } catch (e) { /* noop */ }
       },
       error: (err) => {
         console.error('Error list articles', err);
         this.error = err.error?.message ?? err.message ?? 'Error al cargar artículos';
         this.loading = false;
+        try { this.cdr.detectChanges(); } catch (e) { /* noop */ }
       }
     });
   }
@@ -63,4 +65,3 @@ export class Articles implements OnInit {
     }
   }
 }
-// ...existing code...

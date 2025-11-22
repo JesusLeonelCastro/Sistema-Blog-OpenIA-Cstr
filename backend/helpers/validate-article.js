@@ -1,32 +1,28 @@
-const validator = require("validator");
+const validator = require('validator');
 
 const validate = (params) => {
-         
-let validation = false;
+  // normalizar a string para evitar excepciones si vienen undefined/null
+  const title = String(params.title || '').trim();
+  const content = String(params.content || params.body || '').trim();
+  const summary = String(params.summary || '').trim();
 
-// Validate titulo
-let title = !validator.isEmpty(params.title) 
-            && validator.isAlpha(params.title.replace(/\s/g, ''), 'es-ES');
+  // título: obligatorio, entre 3 y 150 caracteres
+  if (validator.isEmpty(title) || !validator.isLength(title, { min: 3, max: 150 })) {
+    throw new Error('Título no válido (3-150 caracteres).');
+  }
 
+  // contenido: obligatorio, mínimo razonable, máximo alto para permitir posts largos
+  if (validator.isEmpty(content) || !validator.isLength(content, { min: 10, max: 5000 })) {
+    throw new Error('Contenido no válido (10-5000 caracteres).');
+  }
 
+  // resumen opcional: si existe, limitar su tamaño
+  if (summary && !validator.isLength(summary, { min: 0, max: 500 })) {
+    throw new Error('Resumen demasiado largo (máx. 500 caracteres).');
+  }
 
-//validar contenido
-let content = !validator.isEmpty(params.content) 
-            && validator.isLength(params.content, { min: 3, max: 50 }) 
-            && validator.isAlpha(params.content.replace(/\s/g, ''), 'es-ES');
-
-
-
-//comprobar que todo se cumple
-    if(!title || !content){
-
-        throw new Error('Los datos no son validos');
-    }else{
-        console.log('Validacion correcta');
-        validation = true;
-    }
-
-    return validation;
-}
+  // validación correcta
+  return true;
+};
 
 module.exports = validate;

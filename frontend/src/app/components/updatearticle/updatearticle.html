@@ -1,0 +1,36 @@
+<app-header></app-header>
+
+<section class="p-6 max-w-3xl mx-auto">
+  <h2 class="text-3xl font-semibold mb-6 text-white">Crear / Editar artículo</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-6 bg-slate-800 p-6 rounded-lg shadow-md">
+    <div>
+      <label class="block text-sm text-slate-300 mb-2">Título</label>
+      <input formControlName="title" class="w-full p-3 rounded bg-slate-700 text-white border border-slate-700" placeholder="Titulo del artículo" />
+      
+    </div>
+
+    <div>
+      <label class="block text-sm text-slate-300 mb-2">Contenido</label>
+      <textarea formControlName="content" rows="10" class="w-full p-3 rounded bg-slate-700 text-white border border-slate-700" placeholder="Escribe el contenido completo del artículo"></textarea>
+      
+    </div>
+
+    <div>
+      <label class="block text-sm text-slate-300 mb-2">Resumen (opcional)</label>
+      <input formControlName="summary" class="w-full p-3 rounded bg-slate-700 text-white border border-slate-700" placeholder="Resumen breve (opcional)" />
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button type="submit" [disabled]="saving || form.invalid" class="px-4 py-2 bg-blue-600 text-white rounded">
+        {{ saving ? 'Guardando...' : 'Guardar' }}
+      </button>
+      <a routerLink="/myarticles" class="px-4 py-2 bg-gray-600 text-white rounded">Cancelar</a>
+    </div>
+
+    <div *ngIf="error" class="text-red-400 mt-3">{{ error }}</div>
+    <div *ngIf="success" class="text-green-400 mt-3">{{ success }}</div>
+  </form>
+</section>
+
+<app-footer></app-footer>

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+// ...existing code...
+import { Component, OnInit , ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { ArticleService } from '../../service/article.service';
@@ -17,10 +18,15 @@ export class Articleprofile implements OnInit {
   page = 1;
   itemsPerPage = 10;
   total = 0;
+  pages = 1;
   loading = false;
   userId = '';
 
-  constructor(private articleService: ArticleService, private route: ActivatedRoute) {}
+  constructor(
+    private articleService: ArticleService,
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     const stored = localStorage.getItem('user');
@@ -36,22 +42,24 @@ export class Articleprofile implements OnInit {
   }
 
   load(): void {
-  this.loading = true;
-  this.articleService.listByUser(this.userId, this.page).subscribe({
-    next: (res) => {
-      console.log('listByUser response:', res);
-      // adapta a la estructura que devuelve tu backend
-      this.articles = res.articles ?? res.docs ?? [];
-      this.total = res.total ?? res.totalDocs ?? 0;
-      this.itemsPerPage = res.itemsPerPage ?? res.limit ?? 10;
-      this.loading = false;
-    },
-    error: (err) => {
-      console.error('Error al listar artículos byUser:', err);
-      this.loading = false;
-    }
-  });
-}
+    this.loading = true;
+    this.articleService.listByUser(this.userId, this.page).subscribe({
+      next: (res) => {
+        console.log('listByUser response:', res);
+        this.articles = res.articles ?? res.docs ?? [];
+        this.total = res.total ?? res.totalDocs ?? 0;
+        this.itemsPerPage = res.itemsPerPage ?? res.limit ?? 10;
+        this.pages = Math.max(1, Math.ceil(this.total / this.itemsPerPage));
+        this.loading = false;
+        try { this.cdr.detectChanges(); } catch (e) { /* noop */ }
+      },
+      error: (err) => {
+        console.error('Error al listar artículos byUser:', err);
+        this.loading = false;
+        try { this.cdr.detectChanges(); } catch (e) { /* noop */ }
+      }
+    });
+  }
 
   next(): void {
     if (this.page * this.itemsPerPage < this.total) {
@@ -67,3 +75,4 @@ export class Articleprofile implements OnInit {
     }
   }
 }
+// ...existing code...

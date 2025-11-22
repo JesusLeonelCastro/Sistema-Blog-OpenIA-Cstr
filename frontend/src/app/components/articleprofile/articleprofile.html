@@ -12,7 +12,7 @@
     <article *ngFor="let a of articles" class="rounded-xl bg-slate-800 p-4 shadow-md">
       <div class="flex items-start gap-3 mb-3">
         <div>
-          <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{{ a.title }}</h3>
+          <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100 hover:text-blue-400">{{ a.title }}</h3>
           <p class="text-sm text-slate-500 dark:text-slate-400"> {{ a.user?.nick }}</p>
         </div>
       </div>
@@ -23,7 +23,7 @@
 
       <div class="flex items-center justify-between text-sm">
         <time class="text-slate-500 dark:text-slate-400">{{ a.created_at || a.createdAt | date:'mediumDate' }}</time>
-        <a [routerLink]="['/article', a._id]" class="text-blue-400  dark:text-primary-400">Ver</a>
+        <a [routerLink]="['/updatearticle']" class="text-blue-400  dark:text-primary-400">Editar</a>
       </div>
     </article>
   </div>

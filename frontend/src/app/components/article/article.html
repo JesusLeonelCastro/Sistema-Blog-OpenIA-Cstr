@@ -24,16 +24,15 @@
   <div *ngIf="loading" class="text-center py-12 text-slate-400">Cargando...</div>
   <div *ngIf="error" class="text-red-600">{{ error }}</div>
 
-  <div *ngIf="!loading && articles.length" class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-    <article *ngFor="let a of articles" class="rounded-xl bg-slate-800 p-4 shadow-md">
+  <div *ngIf="!loading && articles.length" class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ">
+    <article *ngFor="let a of articles" class="rounded-xl bg-slate-800 p-4 shadow-md ">
       <div class="mb-3">
-        <h3 class="text-lg font-semibold text-white">{{ a.title }}</h3>
-        <p class="text-sm text-slate-400">por {{ a.user?.name ?? a.user?.nick }}</p>
+        <h3 class="text-lg font-semibold text-white hover:text-blue-400">{{ a.title }}</h3>
+        <p class="text-sm text-slate-400 ">por {{ a.user?.name ?? a.user?.nick }}</p>
       </div>
-      <p class="text-sm text-slate-300 mb-4">{{ a.content ? (a.content | slice:0:160) + '…' : (a.summary ?? '') }}</p>
+      <p class="text-sm text-slate-300 mb-4">{{ a.content ? (a.content | slice:0:160) + '' : (a.summary ?? '') }}</p>
       <div class="flex items-center justify-between text-sm">
         <time class="text-slate-400">{{ a.created_at || a.createdAt | date:'mediumDate' }}</time>
-        <a [routerLink]="['/article', a._id]" class="text-blue-400 ">Ver</a>
       </div>
     </article>
   </div>

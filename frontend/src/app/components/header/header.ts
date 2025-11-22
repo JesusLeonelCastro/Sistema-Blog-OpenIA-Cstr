@@ -30,11 +30,7 @@ export class Header {
     });
   }
 
-  toggleTheme(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-    const isDark = document.documentElement.classList.toggle('dark');
-    localStorage.setItem(this.storageKey, isDark ? 'dark' : 'light');
-  }
+  
 
   menuOpen = signal(false);
   mobileOpen = signal(false);

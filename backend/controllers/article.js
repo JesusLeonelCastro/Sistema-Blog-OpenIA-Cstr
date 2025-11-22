@@ -8,61 +8,57 @@ const fs = require('fs');
 //metodos
 //Metodo guardar articulo
 const save = async (req, res) => {
-
-    // recoger los datos del articulo
-    const body = req.body || {};
-
-    // validar los datos (tu helper puede lanzar)
-    try {
-        validate(body);
-    } catch (err) {
-        return res.status(400).json({
-            status: 'error',
-            message: 'Validacion del articulo no superada',
-            details: err?.message || String(err)
-        });
+  try {
+    const body = req.body && typeof req.body === 'object' ? req.body : {};
+    console.log('[ARTICLE SAVE] incoming body:', body);
+    if (req.file) {
+      console.log('[ARTICLE SAVE] file:', { originalname: req.file.originalname, filename: req.file.filename });
     }
 
-    // sacar id del usuario identificado (soporta sub, _id o id)
+    // comprobaciones básicas antes de validar
+    const title = (body.title || '').toString().trim();
+    const content = (body.content || body.body || '').toString().trim();
+
+    if (!title) {
+      return res.status(400).json({ status: 'error', message: 'Falta el título del artículo' });
+    }
+    if (!content) {
+      return res.status(400).json({ status: 'error', message: 'Falta el contenido del artículo' });
+    }
+
+    // validar con el helper y capturar detalle
+    try {
+      validate({ ...body, title, content });
+    } catch (validationErr) {
+      console.error('[ARTICLE SAVE] validation failed:', validationErr);
+      return res.status(400).json({
+        status: 'error',
+        message: 'Validacion del articulo no superada',
+        details: validationErr?.message || String(validationErr)
+      });
+    }
+
+    // usuario identificado
     const userIdentity = req.user || {};
     const userId = userIdentity.sub || userIdentity._id || userIdentity.id;
     if (!userId) {
-        return res.status(401).json({
-            status: 'error',
-            message: 'No autorizado: usuario no identificado'
-        });
+      return res.status(401).json({ status: 'error', message: 'No autorizado: usuario no identificado' });
     }
 
-    // asignar usuario al body
-    body.user = userId;
+    // asignar usuario y guardar
+    const articleToSave = new Article({ ...body, title, content, user: userId });
+    const article = await articleToSave.save();
 
-    try {
-        // crear y guardar articulo
-        const articleToSave = new Article(body);
-        const article = await articleToSave.save();
-
-        if (!article) {
-            return res.status(500).json({
-                status: 'error',
-                message: 'El articulo no se ha guardado'
-            });
-        }
-
-        return res.status(201).json({
-            status: 'success',
-            message: 'El articulo se ha guardado correctamente',
-            article // devuelve el artículo guardado
-        });
-
-    } catch (err) {
-        return res.status(500).json({
-            status: 'error',
-            message: 'Error al guardar el articulo',
-            details: err?.message || String(err)
-        });
+    if (!article) {
+      return res.status(500).json({ status: 'error', message: 'El articulo no se ha guardado' });
     }
 
-}
+    return res.status(201).json({ status: 'success', message: 'El articulo se ha guardado correctamente', article });
+  } catch (err) {
+    console.error('[ARTICLE SAVE] unexpected error:', err);
+    return res.status(500).json({ status: 'error', message: 'Error al guardar el articulo', details: err?.message || String(err) });
+  }
+};
 
 //Metodo listar articulos paginados
 const list = async (req, res) => {

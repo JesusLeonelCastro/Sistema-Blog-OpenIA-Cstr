@@ -9,6 +9,7 @@ import { Update } from './components/update/update';
 import { Articles } from './components/article/article';
 import { Createarticle } from './components/createarticle/createarticle';
 import { Articleprofile } from './components/articleprofile/articleprofile';
+import { Updatearticle } from './components/updatearticle/updatearticle';
 
 export const routes: Routes = [
 
@@ -24,6 +25,7 @@ export const routes: Routes = [
   { path: 'article', component: Articles, canActivate: [authGuard] },
   { path: 'createarticle', component: Createarticle, canActivate: [authGuard] },
   { path: 'myarticles', component: Articleprofile, canActivate: [authGuard] },
+  { path: 'updatearticle', component: Updatearticle, canActivate: [authGuard] },
 
 
   { path: '**', redirectTo: 'login' },

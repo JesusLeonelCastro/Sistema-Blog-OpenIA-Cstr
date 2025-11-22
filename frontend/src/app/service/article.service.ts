@@ -29,5 +29,12 @@ export class ArticleService {
     return this.httpClient.get(`${this.apiUrl}/article/by-user/${userId}/${page}`, { headers } as any);
   }
 
+  updateArticle(id: string, data: any) {
+    const token = localStorage.getItem('token') ?? '';
+    const headers = token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : undefined;
+    // backend espera { id, title, content, summary } en body segun tu controlador
+    return this.httpClient.put(`${this.apiUrl}/article/update`, { id, ...data }, { headers } as any);
+  }
+
 
 }
